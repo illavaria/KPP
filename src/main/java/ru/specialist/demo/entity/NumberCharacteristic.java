@@ -25,4 +25,5 @@ public class NumberCharacteristic {
     public void setComposite(boolean composite) {
         isComposite = composite;
     }
+
 }
