@@ -62,6 +62,7 @@ public class NumberController {
         logger.error("Error 400 - number has to be integer", exception);
         return new ResponseEntity<>(exceptionInfo, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
         ExceptionInfo exceptionInfo = new ExceptionInfo(exception.getMessage(), HttpStatus.BAD_REQUEST.value());
@@ -73,6 +74,6 @@ public class NumberController {
     public ResponseEntity<?> handleInnerException(Exception exception){
         ExceptionInfo exceptionInfo = new ExceptionInfo(exception.getMessage(), 500);
         logger.error("Error 500", exception);
-        return new ResponseEntity<>(exceptionInfo, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(exceptionInfo, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
