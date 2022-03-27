@@ -33,7 +33,7 @@ public class NumberController {
     public NumberCharacteristic getNumberCharacteristic(@RequestParam(value = "number",
             required = true) @Min(value = 0, message = "number has to be >1") int number) {
         logger.info("Successfully logged(GET)");
-        return numberService.analyzeNumber(number);
+        return numberService.saveNumberCharacteristic(number);
     }
 
     @GetMapping("/cache")
