@@ -1,10 +1,10 @@
 package ru.specialist.demo.counter;
 
 public class RequestCounter {
-    private static int counter = -1;
+    private static int counter;
 
     public static void increment(){
-        counter++;
+        ++counter;
     }
 
     public static int getCounter() {

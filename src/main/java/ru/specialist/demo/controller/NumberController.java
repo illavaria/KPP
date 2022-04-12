@@ -9,8 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import ru.specialist.demo.counter.RequestCounterThread;
-import ru.specialist.demo.counter.Synchronization;
 import ru.specialist.demo.entity.NumberCharacteristic;
 import ru.specialist.demo.exception.ExceptionInfo;
 import ru.specialist.demo.service.NumberService;
@@ -26,7 +24,6 @@ public class NumberController {
 
     @Autowired
     private final NumberService numberService;
-    RequestCounterThread requestCounterThread = new RequestCounterThread();
 
     public NumberController(NumberService numberService) {
         this.numberService = numberService;
@@ -36,16 +33,12 @@ public class NumberController {
     public NumberCharacteristic getNumberCharacteristic(@RequestParam(value = "number",
             required = true) @Min(value = 0, message = "number has to be >1") int number) {
         logger.info("Successfully logged(GET)");
-        Synchronization.semaphore.release();
-        requestCounterThread.run();
         return numberService.saveNumberCharacteristic(number);
     }
 
     @GetMapping("/cache")
     public Map<Integer, NumberCharacteristic> getCache() {
         logger.info("Successfully got numbers from Map");
-        Synchronization.semaphore.release();
-        requestCounterThread.run();
         return numberService.getCache();
     }
 
@@ -53,8 +46,6 @@ public class NumberController {
     public NumberCharacteristic saveNumberCharacteristic(@RequestParam(value = "number", required = true)
                                                              @Min(value = 1, message = "number has to be >1") int number)  {
         logger.info("Successfully logged(POST)");
-        Synchronization.semaphore.release();
-        requestCounterThread.run();
         return numberService.saveNumberCharacteristic(number);
     }
 

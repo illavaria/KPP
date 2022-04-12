@@ -2,6 +2,7 @@ package ru.specialist.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.specialist.demo.counter.RequestCounterThread;
 import ru.specialist.demo.entity.NumberCharacteristic;
 import ru.specialist.demo.repository.NumberInMemoryCache;
 
@@ -18,10 +19,12 @@ public class NumberService {
     }
 
     public Map<Integer, NumberCharacteristic> getCache() {
+        new RequestCounterThread(Thread.currentThread().getName()).start();
         return repository.getNumberMap();
     }
 
     public NumberCharacteristic saveNumberCharacteristic(int number) {
+        new RequestCounterThread(Thread.currentThread().getName()).start();
         NumberCharacteristic existingNumberCharacteristic = repository.findByNumber(number);
         if (existingNumberCharacteristic != null) {
             return existingNumberCharacteristic;

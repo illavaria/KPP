@@ -1,29 +1,40 @@
 package ru.specialist.demo.counter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.specialist.demo.controller.CounterController;
 
-public class RequestCounterThread extends Thread{
-    private Log logger = LogFactory.getLog(CounterController.class);
+import java.util.concurrent.Semaphore;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-    public  RequestCounterThread(){
-        super();
-        start();
+public class RequestCounterThread extends Thread {
+    private Log logger = LogFactory.getLog(CounterController.class);
+    private static final Semaphore semaphore = new Semaphore(1, true);
+
+    private final String nameOfParentThread;
+
+    public RequestCounterThread(String nameOfParentThread) {
+        this.nameOfParentThread = nameOfParentThread;
     }
 
-    public void run(){
-        int flag =1;
-        while(flag==1){
+    public void run() {
+        String threadName = Thread.currentThread().getName();
+        try {
+            System.out.println("Start: Available number of permits for " + threadName + " (parent " + nameOfParentThread + ") is: " + semaphore.availablePermits());
+            logger.info(threadName + " is waiting for resolution");
+            semaphore.acquire();
+            System.out.println(threadName + " acquired permit");
+
             try {
-                logger.info(Thread.currentThread().getName()+" is waiting");
-                Synchronization.semaphore.acquire();
                 RequestCounter.increment();
-                logger.info("Counter was incremented. It's  value is: "+RequestCounter.getCounter());
-                flag =0;
-            } catch (InterruptedException exception){
-                logger.error("Thread was interrupted");
+            } finally {
+                logger.info("Counter after increment " + RequestCounter.getCounter());
+                semaphore.release();
+                logger.info(threadName + " is released");
+                System.out.println("End: Available number of permits for " + threadName + " (parent " + nameOfParentThread + ") is: " + semaphore.availablePermits());
             }
+        } catch (InterruptedException e) {
+            logger.error("Thread was interrupted");
         }
+        System.out.println("Thread " + threadName + " (parent " + nameOfParentThread + ")" + " is terminating.");
     }
 }
