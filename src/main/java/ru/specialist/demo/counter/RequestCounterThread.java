@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class RequestCounterThread extends Thread {
-    private Log logger = LogFactory.getLog(CounterController.class);
+    private Log logger = LogFactory.getLog(RequestCounterThread.class);
     private static final Semaphore semaphore = new Semaphore(1, true);
 
     private final String nameOfParentThread;
