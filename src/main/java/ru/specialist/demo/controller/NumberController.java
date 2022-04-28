@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.specialist.demo.entity.NumberCharacteristic;
 import ru.specialist.demo.exception.ExceptionInfo;
+import ru.specialist.demo.service.NumberLogic;
 import ru.specialist.demo.service.NumberService;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @Validated
@@ -47,6 +51,25 @@ public class NumberController {
                                                              @Min(value = 1, message = "number has to be >1") int number)  {
         logger.info("Successfully logged(POST)");
         return numberService.saveNumberCharacteristic(number);
+    }
+
+    @PostMapping("/numberList")
+    public ResponseEntity<?> calculateBulkParams(@Valid @RequestBody List<Integer> bodyList) {
+        List<NumberCharacteristic> resultList = new LinkedList<>();
+        bodyList.forEach((currentElement)->{
+            try{
+                resultList.add(NumberLogic.calculateResult(currentElement));
+            } catch (IllegalArgumentException e){
+                logger.error("Error while PostMapping");
+            }
+        });
+
+        logger.info("Successfully logged(POST)");
+        Integer sum = NumberLogic.calculateSum(bodyList);
+        Integer max = NumberLogic.findMax(bodyList);
+        Integer min = NumberLogic.findMin(bodyList);
+
+        return new ResponseEntity<>(resultList+"\nSum: "+ sum +"\nMax: " + max + "\nMin:" + min, HttpStatus.OK);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
