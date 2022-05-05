@@ -10,11 +10,16 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.specialist.demo.entity.NumberCharacteristic;
+import ru.specialist.demo.entity.ResultDTO;
 import ru.specialist.demo.exception.ExceptionInfo;
+import ru.specialist.demo.service.NumberLogic;
 import ru.specialist.demo.service.NumberService;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @Validated
@@ -47,6 +52,27 @@ public class NumberController {
                                                              @Min(value = 1, message = "number has to be >1") int number)  {
         logger.info("Successfully logged(POST)");
         return numberService.saveNumberCharacteristic(number);
+    }
+
+    @PostMapping("/numberList")
+    public ResponseEntity<?> calculateBulkParams(@Valid @RequestBody List<Integer> bodyList) {
+        if (bodyList.isEmpty()) {
+            new ResponseEntity<>(new ResultDTO(null, null, null, null), HttpStatus.OK);
+        }
+        List<NumberCharacteristic> resultList = new LinkedList<>();
+        bodyList.forEach((currentElement) -> {
+            try {
+                resultList.add(numberService.saveNumberCharacteristic(currentElement));
+            } catch (IllegalArgumentException e) {
+                logger.error("Error while PostMapping");
+            }
+        });
+
+        logger.info("Successfully logged(POST)");
+        ResultDTO dto = new ResultDTO(resultList, NumberLogic.findMax(bodyList), NumberLogic.findMin(bodyList),
+                NumberLogic.calculateSum(bodyList));
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

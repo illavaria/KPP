@@ -20,6 +20,11 @@ public class NumberInMemoryCache {
         numberMap.put(8, new NumberCharacteristic(IS_EVEN, IS_COMPOSITE));
     }
 
+    public boolean isContain(Integer key) {
+        return numberMap.containsKey(key);
+    }
+
+
     public NumberCharacteristic findByNumber(int number) {
         return numberMap.get(number);
     }
@@ -32,4 +37,5 @@ public class NumberInMemoryCache {
     public Map<Integer, NumberCharacteristic> getNumberMap() {
         return numberMap;
     }
+
 }
