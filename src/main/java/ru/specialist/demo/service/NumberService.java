@@ -34,10 +34,7 @@ public class NumberService {
     }
 
     public NumberCharacteristic analyzeNumber(int number) {
-        boolean isEven = false;
-        if (number % 2 == 0) {
-            isEven = true;
-        }
+        boolean isEven = number % 2 == 0;
         boolean isComposite = false;
         for (int i = 2; i < number; i++)
             if (number % i == 0) {

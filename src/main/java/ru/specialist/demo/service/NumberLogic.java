@@ -9,52 +9,32 @@ import ru.specialist.demo.entity.NumberCharacteristic;
 import ru.specialist.demo.repository.NumberInMemoryCache;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 @Service
 public class NumberLogic {
-    @Autowired
-    private static NumberService numberService;
 
-    private Log logger = LogFactory.getLog(NumberLogic.class);
-    @Autowired
-    private NumberInMemoryCache hashMap;
-
-    public static NumberCharacteristic calculateResult(Integer requestParameters) throws IllegalArgumentException{
-        /*NumberCharacteristic numberCharacteristic = new NumberCharacteristic(false, false);
-
-        if(hashMap.isContain(requestParameters)){
-           numberCharacteristic = hashMap.findByNumber(requestParameters);
-           logger.info("Successfully got numbers from Map");
-       }
-        else {
-            hashMap.addNumberCharacteristic(requestParameters,numberCharacteristic);
-            logger.info("Successfully added number's characteristic");
-        }
-       return numberCharacteristic;*/
-        return numberService.saveNumberCharacteristic(requestParameters);
+    public static Integer calculateSum(List<Integer> parameterList){
+        return parameterList.stream().mapToInt(Integer::intValue).sum();
     }
 
-    public static Integer calculateSum(List<Integer> resultList){
-        Integer sum =0;
-        if(!resultList.isEmpty()){
-            sum = resultList.stream().mapToInt(Integer::intValue).sum();
+    public static Integer findMin(List<Integer> parameterList) {
+        OptionalInt min = parameterList.stream().mapToInt(Integer::intValue).min();
+        if(min.isPresent()){
+            return min.getAsInt();
         }
-        return sum;
-    }
-    public static Integer findMax(List<Integer> resultList){
-        Integer max =0;
-        if(!resultList.isEmpty()){
-            max = resultList.stream().mapToInt(Integer::intValue).max().getAsInt();
+        else{
+            return null;
         }
-        return max;
-    }
-    public static Integer findMin(List<Integer> resultList){
-        Integer min =0;
-        if(!resultList.isEmpty()){
-            min = resultList.stream().mapToInt(Integer::intValue).min().getAsInt();
-        }
-        return min;
     }
 
-
+    public static Integer findMax(List<Integer> parameterList) {
+        OptionalInt max = parameterList.stream().mapToInt(Integer::intValue).max();
+        if(max.isPresent()){
+            return max.getAsInt();
+        }
+        else{
+            return null;
+        }
+    }
 }

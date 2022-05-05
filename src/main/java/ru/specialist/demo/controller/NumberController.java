@@ -10,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.specialist.demo.entity.NumberCharacteristic;
+import ru.specialist.demo.entity.ResultDTO;
 import ru.specialist.demo.exception.ExceptionInfo;
 import ru.specialist.demo.service.NumberLogic;
 import ru.specialist.demo.service.NumberService;
@@ -55,21 +56,23 @@ public class NumberController {
 
     @PostMapping("/numberList")
     public ResponseEntity<?> calculateBulkParams(@Valid @RequestBody List<Integer> bodyList) {
+        if (bodyList.isEmpty()) {
+            new ResponseEntity<>(new ResultDTO(null, null, null, null), HttpStatus.OK);
+        }
         List<NumberCharacteristic> resultList = new LinkedList<>();
-        bodyList.forEach((currentElement)->{
-            try{
-                resultList.add(NumberLogic.calculateResult(currentElement));
-            } catch (IllegalArgumentException e){
+        bodyList.forEach((currentElement) -> {
+            try {
+                resultList.add(numberService.saveNumberCharacteristic(currentElement));
+            } catch (IllegalArgumentException e) {
                 logger.error("Error while PostMapping");
             }
         });
 
         logger.info("Successfully logged(POST)");
-        Integer sum = NumberLogic.calculateSum(bodyList);
-        Integer max = NumberLogic.findMax(bodyList);
-        Integer min = NumberLogic.findMin(bodyList);
+        ResultDTO dto = new ResultDTO(resultList, NumberLogic.findMax(bodyList), NumberLogic.findMin(bodyList),
+                NumberLogic.calculateSum(bodyList));
 
-        return new ResponseEntity<>(resultList+"\nSum: "+ sum +"\nMax: " + max + "\nMin:" + min, HttpStatus.OK);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
